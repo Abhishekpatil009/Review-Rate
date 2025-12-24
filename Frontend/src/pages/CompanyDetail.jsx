@@ -21,9 +21,19 @@ const Stars = memo(({ rating }) => {
 
 export default function CompanyDetail() {
   const { id } = useParams();
+
   const [company, setCompany] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [showForm, setShowForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    rating: 5,
+    comment: "",
+  });
 
   useEffect(() => {
     const fetchCompanyData = async () => {
@@ -50,13 +60,43 @@ export default function CompanyDetail() {
     fetchCompanyData();
   }, [id]);
 
-  if (loading) {
-    return <p className="text-center mt-10">Loading...</p>;
-  }
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-  if (!company) {
-    return <p className="text-center mt-10">Company not found</p>;
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      formData.name
+    )}&background=random`;
+
+    try {
+      const res = await fetch("http://localhost:5000/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          avatar: avatarUrl,
+          company: id,
+        }),
+      });
+
+      const newReview = await res.json();
+
+      setReviews([newReview, ...reviews]);
+      setShowForm(false);
+      setFormData({ name: "", rating: 5, comment: "" });
+    } catch (err) {
+      console.error("Error adding review", err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (!company) return <p className="text-center mt-10">Company not found</p>;
 
   return (
     <>
@@ -92,12 +132,78 @@ export default function CompanyDetail() {
                 Founded on{" "}
                 {new Date(company.founded).toLocaleDateString()}
               </p>
-              <button className="mt-3 bg-purple-600 text-white px-4 py-2 rounded">
+
+              {/* ADD REVIEW BUTTON */}
+              <button
+                onClick={() => setShowForm(true)}
+                className="mt-3 bg-purple-600 text-white px-4 py-2 rounded cursor-pointer hover:opacity-90"
+              >
                 + Add Review
               </button>
             </div>
           </div>
         </div>
+
+        {/* ADD REVIEW FORM */}
+        {showForm && (
+          <div className="bg-white rounded-xl shadow p-6 mb-6">
+            <h2 className="text-lg font-semibold mb-4">Add Review</h2>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                type="text"
+                name="name"
+                placeholder="Your Name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full border px-3 py-2 rounded"
+              />
+
+              <select
+                name="rating"
+                value={formData.rating}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded cursor-pointer"
+              >
+                {[5, 4, 3, 2, 1].map((r) => (
+                  <option key={r} value={r}>
+                    {r} Star{r > 1 && "s"}
+                  </option>
+                ))}
+              </select>
+
+              <textarea
+                name="comment"
+                placeholder="Write your review..."
+                value={formData.comment}
+                onChange={handleChange}
+                rows="4"
+                className="w-full border px-3 py-2 rounded"
+              />
+
+              <div className="flex gap-3">
+                {/* SUBMIT */}
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="bg-purple-600 text-white px-4 py-2 rounded cursor-pointer hover:opacity-90 disabled:cursor-not-allowed"
+                >
+                  {submitting ? "Submitting..." : "Submit"}
+                </button>
+
+                {/* CANCEL */}
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="text-gray-500 cursor-pointer hover:text-gray-700"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
 
         {/* REVIEWS */}
         <div className="bg-white rounded-xl shadow p-6">
