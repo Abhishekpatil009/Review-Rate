@@ -1,5 +1,4 @@
 import Navbar from "../components/Navbar";
-import FilterBar from "../components/FilterBar";
 import CompanyCard from "../components/CompanyCard";
 import { companies } from "../data/companies";
 
@@ -7,12 +6,9 @@ export default function Home() {
   return (
     <>
       <Navbar />
-
       <main className="bg-gray-100 min-h-screen">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <FilterBar />
-
-          <p className="text-sm text-gray-400 mt-8">
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          <p className="text-sm text-gray-400">
             Result Found: {companies.length}
           </p>
 
