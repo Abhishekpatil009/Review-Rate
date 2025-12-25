@@ -11,6 +11,7 @@ const reviewSchema = new mongoose.Schema(
     avatar: String,
     rating: { type: Number, min: 1, max: 5, required: true },
     comment: String,
+    likes: { type: Number, default: 0 }, // <-- Add this field
   },
   { timestamps: true }
 );

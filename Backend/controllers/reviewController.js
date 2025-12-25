@@ -49,3 +49,27 @@ export const createReview = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+
+// Toggle like
+export const toggleLikeReview = async (req, res) => {
+  const { id } = req.params; // review ID
+  const { action } = req.body; // "like" or "unlike"
+
+  try {
+    const review = await Review.findById(id);
+    if (!review) return res.status(404).json({ message: "Review not found" });
+
+    if (action === "like") {
+      review.likes += 1;
+    } else if (action === "unlike" && review.likes > 0) {
+      review.likes -= 1;
+    }
+
+    await review.save();
+    res.status(200).json({ likes: review.likes });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
