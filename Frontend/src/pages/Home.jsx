@@ -12,7 +12,6 @@ export default function Home() {
   const [locationTerm, setLocationTerm] = useState("");
   const [sortBy, setSortBy] = useState("name");
 
-  /* ADD COMPANY STATE */
   const [showAddCompany, setShowAddCompany] = useState(false);
   const [error, setError] = useState("");
 
@@ -61,9 +60,7 @@ export default function Home() {
     }
 
     if (sortBy === "date") {
-      list.sort(
-        (a, b) => new Date(b.founded || 0) - new Date(a.founded || 0)
-      );
+      list.sort((a, b) => new Date(b.founded || 0) - new Date(a.founded || 0));
     }
 
     setFilteredCompanies(list);
@@ -94,7 +91,6 @@ export default function Home() {
       });
 
       const savedCompany = await res.json();
-
       setCompanies([savedCompany, ...companies]);
       setShowAddCompany(false);
       setForm({ name: "", address: "", city: "", founded: "" });
@@ -110,7 +106,7 @@ export default function Home() {
       <Navbar searchTerm={searchTerm} onSearch={setSearchTerm} />
 
       <main className="bg-gray-100 min-h-screen">
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-6 py-10">
           <FilterBar
             locationTerm={locationTerm}
             onLocationSearch={setLocationTerm}
@@ -119,7 +115,7 @@ export default function Home() {
           />
 
           {!loading && (
-            <p className="text-sm text-gray-500 mt-5">
+            <p className="text-sm text-gray-500 mt-6">
               Results Found: {filteredCompanies.length}
             </p>
           )}
@@ -127,7 +123,7 @@ export default function Home() {
           {loading ? (
             <p className="mt-6">Loading...</p>
           ) : (
-            <div className="mt-6 space-y-6">
+            <div className="mt-8 space-y-8">
               {filteredCompanies.map((company) => (
                 <CompanyCard key={company._id} company={company} />
               ))}
@@ -139,49 +135,39 @@ export default function Home() {
       {/* ADD COMPANY MODAL */}
       {showAddCompany && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-md w-[420px]">
+          <div className="bg-white p-6 rounded-xl w-[420px]">
             <h2 className="text-lg font-semibold mb-4">Add Company</h2>
 
             <form onSubmit={handleSubmit}>
               <input
                 placeholder="Company Name *"
                 value={form.name}
-                onChange={(e) =>
-                  setForm({ ...form, name: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className="border w-full px-3 py-2 mb-3 rounded"
               />
 
               <input
                 placeholder="Address *"
                 value={form.address}
-                onChange={(e) =>
-                  setForm({ ...form, address: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, address: e.target.value })}
                 className="border w-full px-3 py-2 mb-3 rounded"
               />
 
               <input
                 placeholder="City *"
                 value={form.city}
-                onChange={(e) =>
-                  setForm({ ...form, city: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, city: e.target.value })}
                 className="border w-full px-3 py-2 mb-3 rounded"
               />
 
               <input
                 type="date"
                 value={form.founded}
-                onChange={(e) =>
-                  setForm({ ...form, founded: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, founded: e.target.value })}
                 className="border w-full px-3 py-2 mb-3 rounded"
               />
 
-              {error && (
-                <p className="text-red-500 text-sm mb-3">{error}</p>
-              )}
+              {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
               <div className="flex justify-end gap-3">
                 <button
