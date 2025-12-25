@@ -7,7 +7,7 @@ import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 /* ⭐ STAR COMPONENT */
 const Stars = memo(({ rating }) => {
   const full = Math.floor(rating);
-  const half = rating % 1 !== 0;
+  const half = rating % 1 >= 0.5;
 
   return (
     <div className="flex gap-1">
@@ -35,8 +35,9 @@ export default function CompanyDetail() {
     comment: "",
   });
 
+  /* ================= FETCH DATA ================= */
   useEffect(() => {
-    const fetchCompanyData = async () => {
+    const fetchData = async () => {
       try {
         const companyRes = await fetch(
           `http://localhost:5000/api/companies/${id}`
@@ -57,9 +58,10 @@ export default function CompanyDetail() {
       }
     };
 
-    fetchCompanyData();
+    fetchData();
   }, [id]);
 
+  /* ================= FORM HANDLERS ================= */
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -68,24 +70,32 @@ export default function CompanyDetail() {
     e.preventDefault();
     setSubmitting(true);
 
-    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+    const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(
       formData.name
     )}&background=random`;
 
     try {
-      const res = await fetch("http://localhost:5000/api/reviews", {
+      await fetch("http://localhost:5000/api/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          avatar: avatarUrl,
+          avatar,
           company: id,
         }),
       });
 
-      const newReview = await res.json();
+      // 🔄 Re-fetch updated company & reviews
+      const companyRes = await fetch(
+        `http://localhost:5000/api/companies/${id}`
+      );
+      setCompany(await companyRes.json());
 
-      setReviews([newReview, ...reviews]);
+      const reviewsRes = await fetch(
+        `http://localhost:5000/api/reviews/company/${id}`
+      );
+      setReviews(await reviewsRes.json());
+
       setShowForm(false);
       setFormData({ name: "", rating: 5, comment: "" });
     } catch (err) {
@@ -98,12 +108,14 @@ export default function CompanyDetail() {
   if (loading) return <p className="text-center mt-10">Loading...</p>;
   if (!company) return <p className="text-center mt-10">Company not found</p>;
 
+  const rating = company.rating || 1;
+
   return (
     <>
       <Navbar />
 
       <div className="max-w-5xl mx-auto px-6 py-10">
-        {/* HEADER */}
+        {/* ================= HEADER ================= */}
         <div className="bg-white rounded-xl shadow p-6 mb-6">
           <div className="flex justify-between gap-6">
             <div className="flex gap-4">
@@ -118,40 +130,31 @@ export default function CompanyDetail() {
                 <p className="text-gray-500">{company.address}</p>
 
                 <div className="flex items-center gap-2 mt-2">
-                  <span className="font-semibold">{company.rating}</span>
-                  <Stars rating={company.rating} />
+                  <span className="font-semibold">
+                    {rating.toFixed(1)}
+                  </span>
+                  <Stars rating={rating} />
                   <span className="text-gray-500">
-                    {reviews.length} Reviews
+                    {company.reviewsCount || 0} Reviews
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="text-right">
-              <p className="text-gray-400">
-                Founded on{" "}
-                {new Date(company.founded).toLocaleDateString()}
-              </p>
-
-              {/* ADD REVIEW BUTTON */}
-              <button
-                onClick={() => setShowForm(true)}
-                className="mt-3 bg-purple-600 text-white px-4 py-2 rounded cursor-pointer hover:opacity-90"
-              >
-                + Add Review
-              </button>
-            </div>
+            <button
+              onClick={() => setShowForm(true)}
+              className="h-fit bg-purple-600 text-white px-4 py-2 rounded hover:opacity-90"
+            >
+              + Add Review
+            </button>
           </div>
         </div>
 
-        {/* ADD REVIEW FORM */}
+        {/* ================= ADD REVIEW FORM ================= */}
         {showForm && (
           <div className="bg-white rounded-xl shadow p-6 mb-6">
-            <h2 className="text-lg font-semibold mb-4">Add Review</h2>
-
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
-                type="text"
                 name="name"
                 placeholder="Your Name"
                 value={formData.name}
@@ -164,7 +167,7 @@ export default function CompanyDetail() {
                 name="rating"
                 value={formData.rating}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded cursor-pointer"
+                className="w-full border px-3 py-2 rounded"
               >
                 {[5, 4, 3, 2, 1].map((r) => (
                   <option key={r} value={r}>
@@ -178,61 +181,38 @@ export default function CompanyDetail() {
                 placeholder="Write your review..."
                 value={formData.comment}
                 onChange={handleChange}
-                rows="4"
                 className="w-full border px-3 py-2 rounded"
               />
 
-              <div className="flex gap-3">
-                {/* SUBMIT */}
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="bg-purple-600 text-white px-4 py-2 rounded cursor-pointer hover:opacity-90 disabled:cursor-not-allowed"
-                >
-                  {submitting ? "Submitting..." : "Submit"}
-                </button>
-
-                {/* CANCEL */}
-                <button
-                  type="button"
-                  onClick={() => setShowForm(false)}
-                  className="text-gray-500 cursor-pointer hover:text-gray-700"
-                >
-                  Cancel
-                </button>
-              </div>
+              <button
+                disabled={submitting}
+                className="bg-purple-600 text-white px-4 py-2 rounded"
+              >
+                {submitting ? "Submitting..." : "Submit"}
+              </button>
             </form>
           </div>
         )}
 
-        {/* REVIEWS */}
+        {/* ================= REVIEWS ================= */}
         <div className="bg-white rounded-xl shadow p-6">
-          <p className="text-gray-400 mb-4">
-            Result Found: {reviews.length}
-          </p>
-
           {reviews.map((review) => (
-            <div
-              key={review._id}
-              className="border-b pb-4 mb-4 last:border-none"
-            >
-              <div className="flex items-center gap-3">
-                <img
-                  src={review.avatar}
-                  alt={review.name}
-                  className="w-10 h-10 rounded-full"
-                />
-
-                <div>
-                  <h3 className="font-semibold">{review.name}</h3>
-                  <p className="text-gray-400 text-sm">
-                    {new Date(review.createdAt).toLocaleDateString()}
-                  </p>
+            <div key={review._id} className="border-b pb-4 mb-4">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={review.avatar}
+                    alt={review.name}
+                    className="w-10 h-10 rounded-full"
+                  />
+                  <div>
+                    <h3 className="font-semibold">{review.name}</h3>
+                    <p className="text-gray-400 text-sm">
+                      {new Date(review.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
                 </div>
-
-                <div className="ml-auto">
-                  <Stars rating={review.rating} />
-                </div>
+                <Stars rating={review.rating} />
               </div>
 
               <p className="mt-2 text-gray-700 text-sm">

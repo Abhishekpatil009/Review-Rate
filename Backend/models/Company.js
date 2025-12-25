@@ -6,8 +6,10 @@ const companySchema = new mongoose.Schema(
     logo: String,
     address: String,
     founded: Date,
-    rating: { type: Number, default: 0 },
+
+    rating: { type: Number, default: 1 },
     reviewsCount: { type: Number, default: 0 },
+
     bg: String,
   },
   { timestamps: true }

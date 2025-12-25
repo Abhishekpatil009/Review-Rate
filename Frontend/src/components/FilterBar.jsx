@@ -1,8 +1,8 @@
 import { MapPinIcon } from "@heroicons/react/24/solid";
 
-export default function FilterBar() {
+export default function FilterBar({ onAddCompany, onSort }) {
   return (
-    <div className="bg-white shadow rounded-md px-6 py-5 flex items-end justify-between gap-4">
+    <div className="bg-white shadow rounded-md px-6 py-5 flex items-end gap-4">
       {/* CITY */}
       <div className="flex flex-col w-[350px]">
         <label className="text-sm text-gray-500 mb-1">Select City</label>
@@ -16,20 +16,28 @@ export default function FilterBar() {
         </div>
       </div>
 
-      {/* BUTTONS */}
-      <button className="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700">
+      {/* FIND */}
+      <button className="bg-purple-600 text-white px-6 py-2 rounded-md">
         Find Company
       </button>
 
-      <button className="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700">
+      {/* ADD */}
+      <button
+        onClick={onAddCompany}
+        className="bg-purple-600 text-white px-6 py-2 rounded-md"
+      >
         + Add Company
       </button>
 
       {/* SORT */}
       <div className="ml-auto">
         <label className="text-sm text-gray-500 block mb-1">Sort:</label>
-        <select className="border rounded-md px-4 py-2 w-36">
-          <option>Name</option>
+        <select
+          className="border rounded-md px-4 py-2 w-44"
+          onChange={(e) => onSort(e.target.value)}
+        >
+          <option value="name">By Name (A–Z)</option>
+          <option value="date">By Founded Date</option>
         </select>
       </div>
     </div>
