@@ -169,26 +169,5 @@ http://localhost:5173
 
 ---
 
-## 📌 Future Improvements
-
-* User authentication
-* Prevent multiple likes per user
-* Admin dashboard
-* Edit / Delete reviews
-* Deployment (Vercel + Render)
-
----
-
-## 🤝 Contributing
-
-Pull requests are welcome. For major changes, please open an issue first.
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
----
 
 ### ⭐ If you like this project, give it a star on GitHub!
