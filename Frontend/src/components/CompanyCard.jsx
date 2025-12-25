@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
 export default function CompanyCard({ company }) {
-  // ✅ SAFETY GUARD (prevents crash)
   if (!company) return null;
 
   const rating = company.rating ?? 1;
@@ -11,7 +10,6 @@ export default function CompanyCard({ company }) {
   const hasHalfStar = rating % 1 >= 0.5;
 
   return (
-    // ✅ block makes space-y work
     <Link to={`/company/${company._id}`} className="block">
       <div
         className="

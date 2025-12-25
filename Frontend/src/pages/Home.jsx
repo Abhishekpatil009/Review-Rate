@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import FilterBar from "../components/FilterBar";
 import CompanyCard from "../components/CompanyCard";
+import Footer from "../components/Footer";
 
 export default function Home() {
   const [companies, setCompanies] = useState([]);
@@ -22,7 +23,6 @@ export default function Home() {
     founded: "",
   });
 
-  /* FETCH COMPANIES */
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
@@ -39,7 +39,6 @@ export default function Home() {
     fetchCompanies();
   }, []);
 
-  /* FILTER + SORT */
   useEffect(() => {
     let list = [...companies];
 
@@ -66,7 +65,6 @@ export default function Home() {
     setFilteredCompanies(list);
   }, [searchTerm, locationTerm, sortBy, companies]);
 
-  /* SUBMIT COMPANY */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -132,7 +130,6 @@ export default function Home() {
         </div>
       </main>
 
-      {/* ADD COMPANY MODAL */}
       {showAddCompany && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl w-[420px]">
@@ -188,6 +185,8 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      <Footer />
     </>
   );
 }

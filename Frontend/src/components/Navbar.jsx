@@ -6,7 +6,6 @@ export default function Navbar({ searchTerm, onSearch }) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
-  // Check for user on component mount
   useEffect(() => {
     const token = localStorage.getItem("token");
     const name = localStorage.getItem("name"); // optional, save name on login/signup
@@ -23,7 +22,6 @@ export default function Navbar({ searchTerm, onSearch }) {
   return (
     <header className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* LOGO */}
         <Link to="/" className="flex items-center gap-2">
           <div className="w-9 h-9 bg-purple-600 rounded-full flex items-center justify-center text-white text-lg">
             ★
@@ -33,7 +31,6 @@ export default function Navbar({ searchTerm, onSearch }) {
           </h1>
         </Link>
 
-        {/* COMPANY SEARCH */}
         <div className="relative w-[420px]">
           <input
             type="text"
@@ -45,7 +42,6 @@ export default function Navbar({ searchTerm, onSearch }) {
           <MagnifyingGlassIcon className="w-5 h-5 text-purple-600 absolute right-3 top-2.5" />
         </div>
 
-        {/* AUTH */}
         <div className="flex gap-6 text-sm items-center">
           {user ? (
             <>

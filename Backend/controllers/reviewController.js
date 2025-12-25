@@ -1,43 +1,23 @@
 import Review from "../models/Review.js";
 import Company from "../models/Company.js";
 
-/**
- * @desc    Get reviews by company ID
- * @route   GET /api/reviews/company/:companyId
- */
 export const getReviewsByCompany = async (req, res) => {
   try {
-    const reviews = await Review.find({
-      company: req.params.companyId,
-    }).sort({ createdAt: -1 });
-
+    const reviews = await Review.find({ company: req.params.companyId }).sort({ createdAt: -1 });
     res.status(200).json(reviews);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-/**
- * @desc    Create new review
- * @route   POST /api/reviews
- */
 export const createReview = async (req, res) => {
   try {
     const { company, name, avatar, rating, comment } = req.body;
 
-    const review = await Review.create({
-      company,
-      name,
-      avatar,
-      rating,
-      comment,
-    });
+    const review = await Review.create({ company, name, avatar, rating, comment });
 
-    // 🔥 Update company rating & reviews count
     const reviews = await Review.find({ company });
-
-    const avgRating =
-      reviews.reduce((acc, item) => acc + item.rating, 0) / reviews.length;
+    const avgRating = reviews.reduce((acc, item) => acc + item.rating, 0) / reviews.length;
 
     await Company.findByIdAndUpdate(company, {
       rating: avgRating.toFixed(1),
@@ -50,11 +30,9 @@ export const createReview = async (req, res) => {
   }
 };
 
-
-// Toggle like
 export const toggleLikeReview = async (req, res) => {
-  const { id } = req.params; // review ID
-  const { action } = req.body; // "like" or "unlike"
+  const { id } = req.params;
+  const { action } = req.body;
 
   try {
     const review = await Review.findById(id);

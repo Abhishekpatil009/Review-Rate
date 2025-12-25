@@ -8,7 +8,6 @@ export default function FilterBar({
 }) {
   return (
     <div className="bg-white shadow rounded-md px-6 py-5 flex items-end gap-4">
-      {/* LOCATION SEARCH */}
       <div className="flex flex-col w-[350px]">
         <label className="text-sm text-gray-500 mb-1">
           Search by Address / City
@@ -25,7 +24,6 @@ export default function FilterBar({
         </div>
       </div>
 
-      {/* ADD COMPANY */}
       <button
         onClick={onAddCompany}
         className="bg-purple-600 text-white px-6 py-2 rounded-md"
@@ -33,7 +31,6 @@ export default function FilterBar({
         + Add Company
       </button>
 
-      {/* SORT */}
       <div className="ml-auto">
         <label className="text-sm text-gray-500 block mb-1">Sort:</label>
         <select

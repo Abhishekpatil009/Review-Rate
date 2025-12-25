@@ -21,7 +21,6 @@ export default function Login() {
     try {
       const res = await axios.post("http://localhost:5000/api/auth/login", formData);
 
-      // Save JWT and name
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("name", res.data.user.name); // save name for Navbar
 

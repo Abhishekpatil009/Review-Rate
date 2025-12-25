@@ -4,7 +4,6 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 
-/* ⭐ STAR COMPONENT */
 const Stars = memo(({ rating }) => {
   const full = Math.floor(rating);
   const half = rating % 1 >= 0.5;
@@ -36,11 +35,8 @@ export default function CompanyDetail() {
   });
 
   const [errors, setErrors] = useState({});
-
-  // Global liked state for reviews
   const [likedReviews, setLikedReviews] = useState({});
 
-  /* ================= FETCH DATA ================= */
   const fetchCompanyAndReviews = async () => {
     try {
       const companyRes = await fetch(`http://localhost:5000/api/companies/${id}`);
@@ -52,10 +48,9 @@ export default function CompanyDetail() {
       setCompany(companyData);
       setReviews(reviewsData);
 
-      // Initialize liked state for each review
       const initialLikes = {};
       reviewsData.forEach((r) => {
-        initialLikes[r._id] = false; // false means not liked yet
+        initialLikes[r._id] = false; 
       });
       setLikedReviews(initialLikes);
     } catch (err) {
@@ -69,7 +64,6 @@ export default function CompanyDetail() {
     fetchCompanyAndReviews();
   }, [id]);
 
-  /* ================= FORM HANDLERS ================= */
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -103,7 +97,7 @@ export default function CompanyDetail() {
       setErrors({});
       setShowForm(false);
 
-      await fetchCompanyAndReviews(); // refresh data
+      await fetchCompanyAndReviews(); 
     } catch (err) {
       console.error("Error adding review", err);
     } finally {
@@ -111,7 +105,6 @@ export default function CompanyDetail() {
     }
   };
 
-  /* ================= HANDLE LIKE ================= */
   const handleLike = async (reviewId) => {
     const currentlyLiked = likedReviews[reviewId];
 
@@ -124,12 +117,10 @@ export default function CompanyDetail() {
 
       const data = await res.json();
 
-      // Update likes count
       setReviews((prev) =>
         prev.map((r) => (r._id === reviewId ? { ...r, likes: data.likes } : r))
       );
 
-      // Update liked state
       setLikedReviews((prev) => ({ ...prev, [reviewId]: !currentlyLiked }));
     } catch (err) {
       console.error("Error liking review", err);
@@ -146,12 +137,15 @@ export default function CompanyDetail() {
       <Navbar />
 
       <div className="max-w-5xl mx-auto px-6 py-10">
-        {/* ================= HEADER ================= */}
         <div className="bg-white rounded-xl shadow p-6 mb-6">
           <div className="flex justify-between gap-6">
             <div className="flex gap-4">
               <img
-                src={company.logo || "/default-logo.png"}
+                src={
+                  company.logo && company.logo.trim() !== ""
+                    ? company.logo
+                    : `https://ui-avatars.com/api/?name=${encodeURIComponent(company.name)}&background=random`
+                }
                 alt={company.name}
                 className="w-20 h-20 rounded-md border"
               />
@@ -175,7 +169,6 @@ export default function CompanyDetail() {
           </div>
         </div>
 
-        {/* ================= ADD REVIEW FORM ================= */}
         {showForm && (
           <div className="bg-white rounded-xl shadow p-6 mb-6">
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -241,14 +234,17 @@ export default function CompanyDetail() {
           </div>
         )}
 
-        {/* ================= REVIEWS ================= */}
         <div className="bg-white rounded-xl shadow p-6">
           {reviews.map((review) => (
             <div key={review._id} className="border-b pb-4 mb-4">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <img
-                    src={review.avatar || "/default-avatar.png"}
+                    src={
+                      review.avatar && review.avatar.trim() !== ""
+                        ? review.avatar
+                        : `https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=random`
+                    }
                     alt={review.name}
                     className="w-10 h-10 rounded-full"
                   />
