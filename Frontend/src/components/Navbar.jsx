@@ -1,7 +1,25 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { useEffect, useState } from "react";
 
 export default function Navbar({ searchTerm, onSearch }) {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  // Check for user on component mount
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const name = localStorage.getItem("name"); // optional, save name on login/signup
+    if (token && name) setUser({ name });
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("name");
+    setUser(null);
+    navigate("/login");
+  };
+
   return (
     <header className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -28,19 +46,33 @@ export default function Navbar({ searchTerm, onSearch }) {
         </div>
 
         {/* AUTH */}
-        <div className="flex gap-6 text-sm">
-          <Link
-            to="/signup"
-            className="px-3 py-1 border rounded-md border-purple-600 text-purple-600"
-          >
-            SignUp
-          </Link>
-          <Link
-            to="/login"
-            className="px-3 py-1 border rounded-md border-purple-600 text-purple-600"
-          >
-            Login
-          </Link>
+        <div className="flex gap-6 text-sm items-center">
+          {user ? (
+            <>
+              <span className="text-gray-700">Hello, {user.name}</span>
+              <button
+                onClick={handleLogout}
+                className="px-3 py-1 border rounded-md border-purple-600 text-purple-600 hover:bg-purple-50"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/signup"
+                className="px-3 py-1 border rounded-md border-purple-600 text-purple-600 hover:bg-purple-50"
+              >
+                SignUp
+              </Link>
+              <Link
+                to="/login"
+                className="px-3 py-1 border rounded-md border-purple-600 text-purple-600 hover:bg-purple-50"
+              >
+                Login
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
